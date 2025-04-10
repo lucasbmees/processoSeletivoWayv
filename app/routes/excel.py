@@ -7,8 +7,30 @@ import pandas as pd
 
 router = APIRouter()
 
-@router.post("/inserir_excel")
+@router.post(
+    "/inserir_excel",
+    summary="Inserir dados a partir de um arquivo Excel",
+    response_description="Quantidade de registros inseridos com sucesso"
+)
 async def inserir_excel(arquivo: UploadFile = File(...)):
+    """
+    Realiza o upload de um arquivo Excel (.xls ou .xlsx) contendo dados de pessoas 
+    e insere os registros no banco de dados.
+
+    O arquivo deve conter as seguintes colunas com esses nomes (case insensitive):
+    - **Nome Completo**
+    - **Data de Nascimento**
+    - **Sexo**
+    - **E-mail**
+    - **Celular**
+
+    **Formato esperado dos dados:**
+    - `data de nascimento`: formato de data compatível (`YYYY-MM-DD`, `DD/MM/YYYY`, etc.)
+    - `sexo`: apenas "Masculino", "Feminino" ou "Outros"
+    - `e-mail`: deve ser um e-mail válido
+
+    **Retorna:** mensagem de sucesso e número de registros inseridos.
+    """
     if not arquivo.filename.endswith((".xls", ".xlsx")):
         raise HTTPException(status_code=400, detail="O arquivo deve ser .xls ou .xlsx")
 
